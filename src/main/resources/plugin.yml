@@ -1,0 +1,13 @@
+name: AutoUpdate
+version: ${project.version}
+main: si.f5.hatosaba.autoupdate.AutoUpdate
+
+softdepend:
+  - Aooni
+
+###loadbefore ：[ OnePlugin、AnotherPlugin ]
+
+commands:
+  update:
+    permission: autoupdate.update
+    permission-message: 'You do not have permission'
