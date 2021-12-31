@@ -1,20 +1,17 @@
 package si.f5.hatosaba.autoupdate;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
 public class UpdateCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         final Updater updater = AutoUpdate.getInstance().getUpdater();
-        if(updater.isUpdateAvailable()) {
-            updater.update(sender);
-        }else {
-            sender.sendMessage(AutoUpdate.getInstance().getPluginTag() + "最近版です");
-        }
-
+        updater.update(sender);
         return true;
     }
 

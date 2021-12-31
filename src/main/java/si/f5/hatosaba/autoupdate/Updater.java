@@ -44,7 +44,7 @@ public class Updater {
         lists.put(
                 "Aooni", true
         );
-        lists.forEach((s, v) -> searchUpdate(s, v));
+        lists.forEach(this::searchUpdate);
         return true;
     }
 
@@ -55,8 +55,8 @@ public class Updater {
         final String automaticDone = "ダウンロードが完了しています! " + automatic;
         final String command = "'/update'と実行すると、インストールされます。";
 
-        updateNotification = version + (true ? automaticDone : command);
-        return version + (true ? automaticProgress : command);
+        updateNotification = version + (automaticDone);
+        return version + (automaticProgress);
     }
 
     public boolean isUpdateAvailable() {
@@ -91,6 +91,7 @@ public class Updater {
             final String buildHash = getManifestValue(target, "Git-Revision");
 
             if (buildHash == null || buildHash.equalsIgnoreCase("unknown") || buildHash.length() != 40) {
+                update(Bukkit.getConsoleSender());
                 LOG.warning(ChatColor.DARK_GREEN + "Git-Revisionが利用できませんでした。");
                 LOG.warning(ChatColor.DARK_GREEN + "このプラグインバージョンでは、サポートは受けられません。");
                 return;
@@ -102,14 +103,12 @@ public class Updater {
             switch (masterStatus.toLowerCase()) {
                 case "behind":
                     isUpdateAvailable = true;
-                    searchUpdate();
                     return;
                 case "identical":
                     isUpdateAvailable= false;
                     return;
                 default:
                     LOG.info("Got weird build comparison status from GitHub: " + masterStatus + ". Assuming plugin is up-to-date.");
-                    return;
             }
 
         } catch (JsonSyntaxException e) {
@@ -149,11 +148,7 @@ public class Updater {
 
     private void updateDownloadToFileFromURL(final File file, final String pluginName, final boolean isPrivate) {
         String url = AutoUpdate.getInstance().getGson().fromJson(HttpUtil.requestHttp("https://api.github.com/repos/hatosaba/" + pluginName + "/releases/latest", isPrivate), JsonObject.class).getAsJsonArray("assets").get(0).getAsJsonObject().get("url").getAsString();
-        if (isPrivate) {
-            HttpUtil.downloadFile(url, file, true);
-        } else {
-            HttpUtil.downloadFile(url, file, false);
-        }
+        HttpUtil.downloadFile(url, file, isPrivate);
     }
 
     private void updateDownloadToFile(final File folder, final String pluginName, final boolean isPrivate) {
@@ -201,7 +196,7 @@ public class Updater {
         }
     }
 
-    static String getManifestValue(Plugin plugin, String reversion) {
+    public String getManifestValue(Plugin plugin, String reversion) {
         Map<String, String> attributes = new HashMap<>();
         try {
             Enumeration<URL> resources = plugin.getClass().getClassLoader().getResources(JarFile.MANIFEST_NAME);
