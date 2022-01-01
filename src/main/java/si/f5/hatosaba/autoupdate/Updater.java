@@ -91,9 +91,9 @@ public class Updater {
             final String buildHash = getManifestValue(target, "Git-Revision");
 
             if (buildHash == null || buildHash.equalsIgnoreCase("unknown") || buildHash.length() != 40) {
-                update(Bukkit.getConsoleSender());
                 LOG.warning(ChatColor.DARK_GREEN + "Git-Revisionが利用できませんでした。");
                 LOG.warning(ChatColor.DARK_GREEN + "このプラグインバージョンでは、サポートは受けられません。");
+                LOG.warning(ChatColor.DARK_GREEN + "開発バージョンのためアップデートはされません");
                 return;
             }
 
